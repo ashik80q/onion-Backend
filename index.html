@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+        <h1>My Hot Onion Backend Project</h1>
+        <p id="userName"></p>
+        <div class="container">
+            <div class="row">
+                <input type="text" id="name" class="form-control" placeholder="product name">
+                <input type="text" id="price" class="form-control" placeholder="price">
+                <input type="text" id="stock" class="form-control" placeholder="stock">
+                <button id="addProduct" class="btn btn-primary">Product Add</button></div>
+
+                <ul id="food-list"></ul>
+        </div>
+      
+
+        <script>
+            fetch('http://localhost:8000/foods')
+            .then(res => res.json())
+            .then(data => {
+                displayFoodsList(data);
+            })
+
+            function displayFoodsList(data){
+                const foodContainer = document.getElementById('food-list');
+                for (let i = 0; i < data.length; i++) {
+                    const food = data[i];
+                    appendFoods(food, foodContainer) 
+                }
+                
+            }
+                
+            function appendFoods(food, foodContainer){
+                const item = document.createElement('li');
+                    item.innerText = `${food.name}:${food.price}: available${food.stock}`
+                    foodContainer.appendChild(item);
+                    
+            }
+            const btnAddProduct = document.getElementById('addProduct');
+            btnAddProduct.addEventListener('click', ()=>{
+               const name = document.getElementById('name').value;
+               const price = document.getElementById('price').value;
+               const stock = document.getElementById('stock').value;
+               const product = {name, price,stock};
+              
+               
+
+               fetch('http://localhost:8000/addFood', {
+                method: 'POST',
+                body: JSON.stringify(product),
+                headers: {
+                "Content-type": "application/json; charset=UTF-8"
+                }
+            })
+            .then(res => res.json())
+            .then(data =>{
+                console.log(data);
+                
+                showData(data);
+                //cline input
+                document.getElementById('name').value = '';
+                document.getElementById('price').value = '';
+                document.getElementById('stock').value = '';
+            });
+                        
+       })
+
+       
+       function showData(food){
+           const foodContainer = document.getElementById('food-list');
+
+              appendFoods(food, foodContainer)
+                document.getElementById("userName").innerText = food.name;
+            }
+
+
+
+        </script>
+</body>
+</html>
